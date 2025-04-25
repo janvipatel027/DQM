@@ -1,0 +1,21 @@
+.fixedHeader {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
+}
+
+.fixedColumn {
+  position: sticky;
+  left: 0;
+  background-color: white;
+  z-index: 9;
+}
+
+.cell {
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
+  padding: 8px;
+  border: 1px solid #ddd;
+}

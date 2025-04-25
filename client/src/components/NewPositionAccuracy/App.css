@@ -1,0 +1,369 @@
+/* General Styles */
+.RelativeApp {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+  background-color: #f4f4f4;
+  text-align: center;
+}
+
+.RelativeApp h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 2em;
+}
+
+.RelativeApp h2 {
+  margin-top: 50px;
+  text-align: center;
+  color: #444;
+  font-size: 1.5em;
+}
+
+.RelativeApp .main-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.RelativeApp .left-panel {
+  flex: 1;
+  min-width: 300px;
+  max-width: 350px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-right: 20px;
+}
+
+.RelativeApp .right-panel {
+  flex: 2;
+  min-width: 300px;
+}
+
+.RelativeApp .file-input-container {
+  margin-bottom: 15px;
+}
+
+.RelativeApp .file-input-container label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.RelativeApp .file-input-container input[type="file"] {
+  display: block;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+.RelativeApp .file-input-container .file-name {
+  font-size: 0.9em;
+  color: #777;
+}
+
+.RelativeApp .upload-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+}
+
+.RelativeApp .upload-button:hover {
+  background-color: #0056b3;
+}
+
+.RelativeApp .metrics-display {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.RelativeApp .metrics-display h3 {
+  margin-top: 0;
+  color: #555;
+  font-size: 1.2em;
+}
+
+.RelativeApp .metrics-display p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.RelativeApp .save-button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 100%;
+  font-size: 0.9em;
+}
+
+.RelativeApp .save-button:hover {
+  background-color: #218838;
+}
+
+.RelativeApp .map-container {
+  position: relative;
+  margin-top: 20px;
+  margin-right: 10px;
+}
+
+.RelativeApp .legend {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  top: 10px;
+  left:20px;
+  width: 200px;
+  z-index: 1000;
+}
+
+.RelativeApp .legend h3 {
+  margin-top: 0;
+  font-size: 1em;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.RelativeApp .legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.RelativeApp .legend-color {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+}
+
+.RelativeApp .legend-color.red {
+  background-color: red;
+}
+
+.RelativeApp .legend-color.green {
+  background-color: green;
+}
+
+.RelativeApp .legend-color.red-line {
+  background-color: transparent;
+  border-bottom: 3px solid red;
+  width: 20px;
+}
+
+.RelativeApp .legend-color.green-line {
+  background-color: transparent;
+  border-bottom: 3px solid green;
+  width: 20px;
+}
+
+.RelativeApp .file-grid {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.RelativeApp .file-grid table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.RelativeApp .file-grid th,
+.RelativeApp .file-grid td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.RelativeApp .file-grid th {
+  background-color: #f2f2f2;
+  color: #555;
+}
+
+.RelativeApp .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.RelativeApp .pagination button {
+  background-color: #007bff;
+  color: white;
+  padding: 6px 12px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.RelativeApp .pagination button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.RelativeApp .pagination span {
+  margin: 0 10px;
+}
+
+.RelativeApp .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding-top: 50px;
+  z-index: 100000000000;
+}
+
+.RelativeApp .modal-content {
+  background-color: #ffffff;
+  margin: auto;
+  padding: 20px;
+  /* width: 90%; */
+  max-width: 65%;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.RelativeApp .modal-content h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.RelativeApp .modal-content .close {
+  color: #aaa;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.RelativeApp .modal-content .close:hover,
+.RelativeApp .modal-content .close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.RelativeApp .modal-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.RelativeApp .modal-content th,
+.RelativeApp .modal-content td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.RelativeApp .modal-content th {
+  background-color: #f2f2f2;
+  color: #555;
+}
+
+@media screen and (max-width: 768px) {
+  .RelativeApp .main-content {
+    flex-direction: column;
+  }
+
+  .RelativeApp .left-panel,
+  .RelativeApp .right-panel {
+    margin-right: 0;
+    max-width: 100%;
+  }
+
+  .RelativeApp .map-container {
+    width: 100%;
+  }
+
+  .RelativeApp .legend {
+    position: static;
+    margin-top: 10px;
+  }
+}
+
+.RelativeApp .App {
+  text-align: center;
+  margin: 20px;
+}
+
+.RelativeApp form {
+  margin: 20px auto;
+  width: 300px;
+  text-align: left;
+}
+
+.RelativeApp form div {
+  margin-bottom: 15px;
+}
+
+.RelativeApp label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.RelativeApp input[type="file"] {
+  width: 100%;
+}
+
+/* button {
+  padding: 10px 20px;
+  font-size: 16px;
+} */
+
+.RelativeApp .calculations-grid {
+  margin: 20px auto;
+  width: 600px;
+}
+
+.RelativeApp .calculations-grid h2 {
+  text-align: center;
+}
+
+.RelativeApp .calculations-grid table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.RelativeApp .calculations-grid th,.RelativeApp .calculations-grid td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.RelativeApp .calculations-grid th {
+  background-color: #f2f2f2;
+}
+
+
+.RelativeApp .modal {
+  display: block !important; /* Ensure it is visible */
+}
+
+
+

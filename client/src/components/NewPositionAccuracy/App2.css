@@ -1,0 +1,239 @@
+/* App.css */
+
+.AbsoluteApp {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    text-align: center;
+  }
+  
+  .AbsoluteApp h1 {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .AbsoluteApp .main-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  
+  .AbsoluteApp .left-panel,.AbsoluteApp .right-panel {
+    flex: 1 1 500px;
+    margin: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background-color: #fff;
+  }
+  
+  .AbsoluteApp .left-panel {
+    max-width: 400px;
+  }
+  
+  .AbsoluteApp .map-container {
+    position: relative;
+    width: 100%;
+  }
+  
+  .AbsoluteApp .map-wrapper {
+    position: relative;
+  }
+  
+  .AbsoluteApp .legend {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95); /* Slightly more opaque for better readability */
+    padding: 15px;
+    border-radius: 8px; /* Smoother edges */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow for better visibility */
+    z-index: 1000;
+    width: 180px; /* Increased width for better spacing */
+    font-family: Arial, sans-serif;
+  }
+  
+  .AbsoluteApp .legend h3 {
+    margin: 0 0 10px 0; /* Top and bottom spacing for better layout */
+    font-size: 18px; /* Slightly larger text */
+    text-align: center;
+   
+  }
+  
+  .AbsoluteApp .legend h3 {
+    margin-top: 0;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .AbsoluteApp .legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .AbsoluteApp .legend-color {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    border: 1px solid #000;
+  }
+  
+  .AbsoluteApp .red { background: red; }
+  .AbsoluteApp .green { background: green; }
+  /*.black { background: black; }*/
+  .AbsoluteApp .blue-circle {
+    background: blue;
+    border-radius: 50%;
+  }
+  
+  .AbsoluteApp .file-input-container {
+    margin-bottom: 15px;
+  }
+  
+  .AbsoluteApp .file-name {
+    display: block;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .AbsoluteApp .upload-button, .AbsoluteApp .save-button, .AbsoluteApp .button-group button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .AbsoluteApp .upload-button:hover,.AbsoluteApp .save-button:hover,.AbsoluteApp .button-group button:hover {
+    background-color: #0056b3;
+  }
+  
+  .AbsoluteApp .metrics-display {
+    margin-top: 20px;
+  }
+  
+  .AbsoluteApp .metrics-display h3 {
+    margin-bottom: 10px;
+  }
+  
+  .AbsoluteApp .metrics-display p {
+    margin: 5px 0;
+  }
+  
+  .AbsoluteApp .button-group {
+    margin-top: 20px;
+  }
+  
+  .AbsoluteApp .file-grid {
+    margin: 20px;
+    overflow-x: auto;
+  }
+  
+  .AbsoluteApp .file-grid table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .AbsoluteApp .file-grid th, .AbsoluteApp .file-grid td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  .AbsoluteApp .file-grid th {
+    background-color: #f2f2f2;
+  }
+  
+  .AbsoluteApp .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .AbsoluteApp .pagination button {
+    padding: 8px 16px;
+    margin-right: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .AbsoluteApp .pagination button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .AbsoluteApp .modal {
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto; /* Enable vertical scrollbar */
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .AbsoluteApp .modal-content {
+    margin: 50px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    /* width: 80%; */
+    max-width: 65%;
+    overflow-x: auto; /* Enable horizontal scrollbar */
+  }
+  
+  .AbsoluteApp .close {
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+  }
+  
+  .AbsoluteApp .table-container {
+    max-height: 300px;
+    overflow-y: auto; /* Scrollbar for grid view */
+  }
+  
+  .AbsoluteApp table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .AbsoluteApp th,.AbsoluteApp  td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  .AbsoluteApp th {
+    background-color: #f2f2f2;
+  }
+  
+  @media (max-width: 768px) {
+    .AbsoluteApp .main-content {
+        flex-direction: column;
+        align-items: center;
+    }
+  
+    .AbsoluteApp .left-panel, .AbsoluteApp .right-panel {
+        max-width: 100%;
+    }
+  
+    .AbsoluteApp .modal-content {
+        width: 95%;
+    }
+  }
+
+  .AbsoluteApp .modal {
+    display: block !important; /* Ensure it is visible */
+  }
+  
