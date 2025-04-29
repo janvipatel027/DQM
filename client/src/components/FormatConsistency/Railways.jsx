@@ -4,10 +4,13 @@ import { Button } from "react-bootstrap";
 import { PickList } from "primereact/picklist";
 import styled from 'styled-components';
 import { FixedSizeList as List } from 'react-window';
-
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 
 const MainContainer = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 const DataContainer = styled.div`
   position: relative;
@@ -21,16 +24,8 @@ const Table1 = styled.table`
   border-radius: 8px;
   width: 30vw
 `;
-const TableHeader = styled.th`
-  background-color: #f2f2f2;
-  padding: 10px;
-  font-weight: bold;
-  text-align: left;
 
-`;
 const TableCell = styled.td`
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
   text-align: center;
 `;
 const TableBodyRow = styled.tr`
@@ -38,15 +33,7 @@ const TableBodyRow = styled.tr`
     background-color: #f2f2f2;
   }
 `;
-const Lab = styled.div`
-  background-color: red;
-  color: black;
-  padding: 10px;
-  font-size: 15px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-`;
+
 
 const RailwayCode = () => {
   const [source, setSource] = useState([]);
@@ -54,7 +41,7 @@ const RailwayCode = () => {
   const [selectedFilename, setSelectedFilename] = useState("");
   const [data, setData] = useState([]);
   const [incorrect, setincorrect] = useState('');
-
+  const [tableData, setTableData] = useState([]);
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
     const formData = new FormData();
@@ -87,15 +74,24 @@ const RailwayCode = () => {
       console.error("Error fetching field names:", error);
     }
   };
-  
+
   const fetchStationCode = async () => {
     try {
       const response = await axios.post('http://localhost:3001/api/railway/check', {
         filename: selectedFilename,
         attributes: target,
       });
+      const errorRate = parseFloat(((response.data.errorcount / (response.data.validCount + response.data.errorcount)) * 100).toFixed(3));
+      const rows = {
+        filename: selectedFilename,
+        total: response.data.validCount + response.data.errorcount,
+        valid: response.data.validCount,
+        invalid: response.data.errorcount,
+        errorRate: errorRate,
+      }
       setData(response.data?.data);
-      setincorrect(((response.data.errorcount / (response.data.validCount + response.data.errorcount)) * 100).toFixed(3));
+      setincorrect(errorRate);
+      setTableData([rows]);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -128,17 +124,51 @@ const RailwayCode = () => {
           </div>
         </div>
         <Button onClick={fetchStationCode} style={{ marginBottom: "50px" }}>Start Test</Button>
-      </center>
+      <DataTable
+        value={tableData}
+        style={{ width: "90%", margin: "15px" }}>
+        <Column
+          field="filename"
+          header="Name of File"
+          style={{ width: "25%", border: "1px solid black" }}
+        ></Column>
+        <Column
+          field="total"
+          header="Total Count"
+          style={{ width: "15%", border: "1px solid black" }}
+        ></Column>
+        <Column
+          field="valid"
+          header="Valid Count"
+          style={{ width: "15%", border: "1px solid black" }}
+        ></Column>
+        <Column
+          field="invalid"
+          header="Invalid Count"
+          style={{ width: "15%", border: "1px solid black" }}
+        ></Column>
+        <Column
+          field="errorRate"
+          header="Error Rate"
+          style={{ width: "25%", border: "1px solid black" }}
+          body={(rowData) => (
+            <div>
+              {rowData.errorRate}%
+            </div>
+          )}
+          ></Column>
+      </DataTable>
+          </center>
       <MainContainer>
         {data.length !== 0 &&
           <DataContainer style={{ marginTop: "42px" }}>
             <h4>Filter Table</h4>
-            <Lab><strong>Error Percentage: </strong>{incorrect}%</Lab>
+            {/* <Lab><strong>Error Percentage: </strong>{incorrect}%</Lab> */}
             <>
               <Table1>
-                
+
                 <tbody>
-                  <List height={400} itemCount={data.length} itemSize={35} width="30vw">
+                  <List height={400} itemCount={data.length} itemSize={35} width="50vw">
                     {Row}
                   </List>
                 </tbody>

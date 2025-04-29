@@ -98,6 +98,7 @@ const Omission = () => {
     }
   };
 
+  
   const sendFieldNames = async () => {
     try {
       setSendingFieldNames(true);
@@ -237,7 +238,7 @@ const Omission = () => {
   return (
     <>
       <div>
-        <h2>&nbsp;Omission</h2>
+        <h2 style={{textAlign: "center", margin: "20px"}}>&nbsp;Omission</h2>
         <center>
           <input
             className="form-control uploadBtnInput"

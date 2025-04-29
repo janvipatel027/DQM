@@ -62,11 +62,12 @@ exports.processLatLonState = async (filePath) => {
 
     }
     
+    const invalid = Number(invalidCount);
     const totalRecords = results.length;
     const errorRate = totalRecords > 0 ? ((invalidCount / totalRecords) * 100).toFixed(2) : "0";
     const accuracy = (100 - errorRate).toFixed(2);
 
-    return { results, errorRate, accuracy, invalidCount };
+    return { results, errorRate, accuracy, invalid };
 };
 
 // Process State-District Validation
@@ -85,11 +86,12 @@ exports.processStateDistrict = async (filePath) => {
         results.push(row);
     }
     // console.log(results);
+    const invalid = Number(invalidCount);
     const totalRecords = results.length;
     const errorRate = totalRecords > 0 ? ((invalidCount / totalRecords) * 100).toFixed(2) : "0";
     const accuracy = (100 - errorRate).toFixed(2);
 
-    return { results, errorRate, accuracy, invalidCount };
+    return { results, errorRate, accuracy, invalid };
 };
 
 
@@ -109,11 +111,12 @@ exports.processPincodeDistrict = async (filePath) => {
         results.push(row);
     }
 
+    const invalid = Number(invalidCount);
     const totalRecords = results.length;
     const errorRate = totalRecords > 0 ? ((invalidCount / totalRecords) * 100).toFixed(2) : "0";
     const accuracy = (100 - errorRate).toFixed(2);
 
-    return { results, errorRate, accuracy, invalidCount };
+    return { results, errorRate, accuracy, invalid };
 };
 
 async function saveConceptualLog(filename, selectedAttributes, errorRate, accuracyRate, category) {

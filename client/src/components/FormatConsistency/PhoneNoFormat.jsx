@@ -28,20 +28,31 @@ const Phoneformate = () => {
   const [fetchingFieldNames, setFetchingFieldNames] = useState(false);
   const [sendingFieldNames, setSendingFieldNames] = useState(false);
   const [savingData, setSavingData] = useState(false);
+  // const [tableData, setTableData] = useState([]);
+  const [selectedAttribute, setSelectedAttribute] = useState();
+  const [showTable, setShowTable] = useState(false);
   // const [deletingLogs, setDeletingLogs] = useState(false);
   // const [downloadingData, setDownloadingData] = useState(false);
   const [phoneNoValidationData, setPhoneNoValidationData] = useState([]);
 
   let sendField = [];
 
-  const onChange = (event) => {
-    setSource(event.source);
-    setTarget(event.target);
-    // setOmissionRate(0);
+  const onChange = (e) => {
+    const { source, target } = e;
+    setTarget(target.length > 1 ? [target[target.length - 1]] : target);
+    setSelectedAttribute(target.map((item) => item.value));
   };
 
   const handleFileChange = async (event) => {
+
     const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      setShowTable(false);
+      setPhoneNoValidationData([]);
+      setTarget([]);
+      setSource([]);
+      setSelectedAttribute();
+    }
     const formData = new FormData();
 
     formData.append("excelFile", selectedFile);
@@ -109,6 +120,8 @@ const Phoneformate = () => {
 
         // Set the phoneNo validation data
         setPhoneNoValidationData(response.data);
+        setShowTable(true); // Show table after fetching data
+        console.log(response.data);
       } else {
         console.log("Please Select a file.");
       }
@@ -132,6 +145,8 @@ const Phoneformate = () => {
       fetchData();
       setTarget([]);
       setSource([]);
+      setSelectedFilename("");
+      setSelectedAttribute();
     } catch (err) {
       console.log(err);
     } finally {
@@ -143,7 +158,7 @@ const Phoneformate = () => {
     const response = await axios.get(
       "http://localhost:3001/api/omission/omission-log/"
     );
-    console.log(response.data);
+    // console.log(response.data);
     setSaveData(response.data.reverse());
   };
 
@@ -187,7 +202,7 @@ const Phoneformate = () => {
 
   const calculateAccuracy = (data) => {
     if (!data || data.length === 0) return 0;
-  
+
     // Count the number of true values in the 'isvalid' property
     const trueCount = data.reduce((acc, curr) => {
       if (curr.isvalid === true) {
@@ -196,20 +211,27 @@ const Phoneformate = () => {
         return acc;
       }
     }, 0);
-  
+
     // Calculate the accuracy percentage
-    const accuracy = (trueCount / data.length) * 100;
-    return accuracy.toFixed(2);
+    const accuracy = ((trueCount / data.length) * 100).toFixed(2);
+    return { accuracy, trueCount };
   };
-  
+
   // Calculate accuracy
-  const accuracy = calculateAccuracy(phoneNoValidationData);
-  
+  const temp = calculateAccuracy(phoneNoValidationData);
+  const rows = {
+    filename: selectedFilename,
+    total: temp.trueCount + (phoneNoValidationData.length - temp.trueCount),
+    valid: temp.trueCount,
+    invalid: phoneNoValidationData.length - temp.trueCount,
+    accuracy: temp.accuracy,
+    errorRate: 100 - temp.accuracy,
+  }
 
   return (
     <>
       <div>
-        <h2>&nbsp;PhoneNo Formate</h2>
+        <h2>&nbsp;PhoneNo Format</h2>
         <center>
           <input
             className="form-control uploadBtnInput"
@@ -272,9 +294,53 @@ const Phoneformate = () => {
               "Check Validity"
             )}
           </button>
-          <h4>PhoneNo Accuracy Rate: {accuracy}%</h4>
-          
-          <div style={{ margin: "0 20px", overflowX: "auto" }}>
+          {/* <h4>PhoneNo Accuracy Rate: {temp.accuracy}%</h4> */}
+          <DataTable
+            value={rows ? [rows] : []} // Use rows for the table value
+            style={{ width: "90%", margin: "15px" }}>
+            <Column
+              field="filename"
+              header="Name of File"
+              style={{ width: "25%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="total"
+              header="Total Count"
+              style={{ width: "15%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="valid"
+              header="Valid Count"
+              style={{ width: "15%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="invalid"
+              header="Invalid Count"
+              style={{ width: "15%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="accuracy"
+              header="Accuracy Rate"
+              style={{ width: "15%", border: "1px solid black" }}
+              body={(rowData) => (
+                <div>
+                  {rowData.accuracy}%
+                </div>
+              )}
+            ></Column>
+            <Column
+              field="errorRate"
+              header="Error Rate"
+              style={{ width: "15%", border: "1px solid black" }}
+              body={(rowData) => (
+                <div>
+                  {rowData.errorRate.toFixed(2)}%
+                </div>
+              )}
+            ></Column>
+          </DataTable>
+          {showTable && (
+            <div style={{ margin: "0 20px", overflowX: "auto" }}>
             <DataTable
               value={phoneNoValidationData} // Use phoneNoValidationData for the table value
               paginator
@@ -283,8 +349,8 @@ const Phoneformate = () => {
               tableStyle={{ minWidth: "5rem" }}
             >
               <Column
-                field="phone"
-                header="phone"
+                field={selectedAttribute}
+                header={selectedAttribute}
                 style={{ width: "25%" }}
               ></Column>
               <Column
@@ -293,8 +359,6 @@ const Phoneformate = () => {
                 style={{ width: "25%" }}
               ></Column>
             </DataTable>
-          </div>
-          
           <button
             className="btn btn-primary mb-2"
             onClick={handleSave}
@@ -302,6 +366,9 @@ const Phoneformate = () => {
           >
             {savingData ? <Spinner animation="border" size="sm" /> : "Save"}
           </button>
+          </div>
+          )}
+
 
         </center>
         <div

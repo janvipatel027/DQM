@@ -29,7 +29,7 @@ const DomainConsistency = () => {
   const [totalrow, setTotalRow] = useState([]);
   const [domain, setDomain] = useState([]);
   const [domainData, setDomainData] = useState({});
-  // const [selectedIds, setSelectedIds] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [saveData, setSaveData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [responseData, setResponseData] = useState(null);
@@ -44,17 +44,17 @@ const DomainConsistency = () => {
 
     formData.append("excelFile", selectedFile);
 
-    
+
     for (let [key, value] of formData.entries()) {
       console.log(`${key}: ${value}`);
-  }
+    }
 
     try {
       for (let [key, value] of formData.entries()) {
         console.log(`${key}: ${value}`);
-    }
+      }
 
-    //  setSelectedFilename(formData)
+      //  setSelectedFilename(formData)
       const response = await axios.post(
         "http://localhost:3001/api/generaldetails",
         formData
@@ -73,6 +73,7 @@ const DomainConsistency = () => {
       setDomainRate(0);
       setTotalRow([]);
       setDomain([]);
+      setTableData([]);
     } catch (error) {
       if (error.response && error.response.status === 400) {
         alert(error.response.data.message);
@@ -285,7 +286,21 @@ const DomainConsistency = () => {
         "http://localhost:3001/api/domainconsistency/domain-auto",
         rawData
       );
+      console.log(res.data);
+      const inDomainSum = res.data.result.inDomain.reduce((sum, item) => {
+        const value = Object.values(item)[0]; // Get the value inside the object
+        return sum + value;
+      }, 0);
+      const outDomainSum = res.data.result.outDomain.reduce((sum, item) => sum + Object.values(item)[0], 0);
 
+      const rows = {
+        filename: selectedFilename,
+        total: inDomainSum + outDomainSum,
+        correct: inDomainSum,
+        incorrect: outDomainSum,
+        domainRate: domainRate
+      }
+      setTableData([rows]);
       console.log(res.data);
       setDomainRate(res.data.result.domainConsistency);
       setTotalRow(res.data.result.totalChecks);
@@ -375,7 +390,7 @@ const DomainConsistency = () => {
   return (
     <>
       <div>
-        <h2>&nbsp;Domain Consistency</h2>
+        <h2 style={{ textAlign: "center", margin: "20px" }}>&nbsp;Domain Consistency</h2>
         <br />
         <center>
           <input
@@ -395,7 +410,7 @@ const DomainConsistency = () => {
           </button>
         </center>
 
-        <div className="alert alert-primary" style={{margin: "20px 100px", }}>
+        <div className="alert alert-primary" style={{ margin: "20px 100px", }}>
           <b>Definition: </b> Domain Consistency ensures that the attribute value fall within the predefined range or set of acceptable values.
         </div>
 
@@ -497,7 +512,7 @@ const DomainConsistency = () => {
                                   value={option}
                                   checked={
                                     selectedValues[rowIndex]?.selectedValues[
-                                      optionIndex
+                                    optionIndex
                                     ] || false
                                   }
                                   onChange={(event) =>
@@ -584,7 +599,41 @@ const DomainConsistency = () => {
             <button className="btn btn-primary" onClick={handleCalculateRate}>
               Calculate domain error rate
             </button>
-            <h4>Domain error rate: {domainRate}%</h4>
+            {/* <h4>Domain error rate: {domainRate}%</h4> */}
+            <DataTable
+              value={tableData}
+              style={{ width: "90%", margin: "15px" }}>
+              <Column
+                field="filename"
+                header="Name of File"
+                style={{ width: "25%", border: "1px solid black" }}
+              ></Column>
+              <Column
+                field="total"
+                header="Total Count"
+                style={{ width: "15%", border: "1px solid black" }}
+              ></Column>
+              <Column
+                field="correct"
+                header="Valid Count"
+                style={{ width: "15%", border: "1px solid black" }}
+              ></Column>
+              <Column
+                field="incorrect"
+                header="Invalid Count"
+                style={{ width: "15%", border: "1px solid black" }}
+              ></Column>
+              <Column
+                field="domainRate"
+                header="Error Rate"
+                style={{ width: "25%", border: "1px solid black" }}
+                body={(rowData) => (
+                  <div>
+                    {rowData.domainRate}%
+                  </div>
+                )}
+              ></Column>
+            </DataTable>
             <button className="btn btn-primary" onClick={handleSave}>
               Save
             </button>
@@ -594,15 +643,15 @@ const DomainConsistency = () => {
         <div
           style={{ display: "flex", justifyContent: "center", height: "100%" }}
         >
-        <div className="card" style={{ width: "85%" }}>
-        <DataTable
-          value={saveData}
-          paginator
-          rows={5}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          tableStyle={{ minWidth: "5rem" }}
-        >
-          {/* <Column
+          <div className="card" style={{ width: "85%" }}>
+            <DataTable
+              value={saveData}
+              paginator
+              rows={5}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              tableStyle={{ minWidth: "5rem" }}
+            >
+              {/* <Column
                 field=""
                 style={{ width: "5%" }}
                 body={(rowData) => (
@@ -629,37 +678,37 @@ const DomainConsistency = () => {
                   </>
                 )}
               ></Column> */}
-          <Column
-            field="filename"
-            header="Name of File"
-            style={{ width: "25%" }}
-          ></Column>
+              <Column
+                field="filename"
+                header="Name of File"
+                style={{ width: "25%" }}
+              ></Column>
 
-          <Column
-            field="tested_date"
-            header="Tested Date"
-            style={{ width: "20%" }}
-          ></Column>
-          <Column
-            field="tested_result"
-            header="Test Result (%)"
-            style={{ width: "15%" }}
-          ></Column>
-          <Column
-            field="action"
-            header="View File"
-            style={{ width: "10%"}}
-            body={(rowData) => (
-              <div className="btnCon">
-                <VisibilityIcon
-                  style={{ cursor: "pointer" }}
-                  onClick={() => viewData(rowData.filename)}
-                />
-              </div>
-            )}
-          />
-        </DataTable>
-        </div>
+              <Column
+                field="tested_date"
+                header="Tested Date"
+                style={{ width: "20%" }}
+              ></Column>
+              <Column
+                field="tested_result"
+                header="Test Result (%)"
+                style={{ width: "15%" }}
+              ></Column>
+              <Column
+                field="action"
+                header="View File"
+                style={{ width: "10%" }}
+                body={(rowData) => (
+                  <div className="btnCon">
+                    <VisibilityIcon
+                      style={{ cursor: "pointer" }}
+                      onClick={() => viewData(rowData.filename)}
+                    />
+                  </div>
+                )}
+              />
+            </DataTable>
+          </div>
         </div>
       </div>
 

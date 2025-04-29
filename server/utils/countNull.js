@@ -42,6 +42,7 @@ const countNull = async (data, attributes) => {
   );
   console.log("Counts:", counts.cols, counts.rows, counts.omitted, counts.omissionRate);
 
+  
   return counts;
 };
 

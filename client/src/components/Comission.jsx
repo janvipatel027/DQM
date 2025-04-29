@@ -103,17 +103,18 @@ const Comission = () => {
       console.log(target);
       console.log(total);
       const committed = total - target.length;
-      const comissionRate = ((total - target.length) / total) * 100;
-      setComissionRate(comissionRate);
+      const comission = ((total - target.length) / total) * 100;
+      setComissionRate(comission);
       console.log(comissionRate);
       const rows = {
         selectedFilename: selectedFilename,
         total: total,
         committed: committed,
-        commissionRate: comissionRate.toFixed(2)+"%",
+        commissionRate: comission.toFixed(2)+"%",
       };
       setTableData([rows]);
 
+      
       const targetArr = [];
       target.forEach((e) => {
         targetArr.push(e.value);
@@ -200,7 +201,7 @@ const Comission = () => {
 
   return (
     <>
-      <h2>&nbsp;Comission</h2>
+      <h2 style={{textAlign: "center", margin: "20px"}}>&nbsp;Comission</h2>
       <center>
         <input
           className="form-control uploadBtnInput"

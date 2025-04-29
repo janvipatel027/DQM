@@ -27,12 +27,12 @@ exports.validateLatLonState = async (req, res) => {
         const filePath = path.join(__dirname, "..", "uploads", filename);
         // console.log("Reading JSON file:", filePath); // Debugging
 
-        const { results, errorRate, accuracy } = await conceptualConsistencyService.processLatLonState(filePath);
+        const { results, errorRate, accuracy, invalid } = await conceptualConsistencyService.processLatLonState(filePath);
 
         // Save log after validation
         // await conceptualConsistencyService.saveConceptualLog(filename, ["latitude", "longitude", "state"], errorRate, accuracy, "latlong_state");
 
-        res.json({ validationResults: results, errorRate, accuracy });
+        res.json({ validationResults: results, errorRate, accuracy, invalid });
     } catch (error) {
         console.error("Error validating Lat-Lon & State:", error);
         res.status(500).json({ error: "Internal Server Error" });
@@ -47,12 +47,12 @@ exports.validateStateDistrict = async (req, res) => {
         const filePath = path.join(__dirname, "..", "uploads", filename);
         // console.log("Reading JSON file:", filePath); // Debugging
 
-        const { results, errorRate, accuracy } = await conceptualConsistencyService.processStateDistrict(filePath);
+        const { results, errorRate, accuracy, invalid } = await conceptualConsistencyService.processStateDistrict(filePath);
 
         // Save log after validation
         // await conceptualConsistencyService.saveConceptualLog(filename, ["state", "district"], errorRate, accuracy, "state_district");
 
-        res.json({ validationResults: results, errorRate, accuracy });
+        res.json({ validationResults: results, errorRate, accuracy, invalid });
     } catch (error) {
         console.error("Error validating State & District:", error);
         res.status(500).json({ error: "Internal Server Error" });
@@ -68,12 +68,12 @@ exports.validatePincodeDistrict = async (req, res) => {
         const filePath = path.join(__dirname, "..", "uploads", filename);
         // console.log("Reading JSON file:", filePath); // Debugging
         
-        const { results, errorRate, accuracy } = await conceptualConsistencyService.processPincodeDistrict(filePath);
+        const { results, errorRate, accuracy, invalid } = await conceptualConsistencyService.processPincodeDistrict(filePath);
 
         // Save log after validation
         // await conceptualConsistencyService.saveConceptualLog(filename, ["pincode", "district"], errorRate, accuracy, "pincode_district");
 
-        res.json({ validationResults: results, errorRate, accuracy });
+        res.json({ validationResults: results, errorRate, accuracy, invalid });
     } catch (error) {
         console.error("Error validating Pincode & District:", error);
         res.status(500).json({ error: "Internal Server Error" });

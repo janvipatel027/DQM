@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import axios from "axios";
 // import Swal from 'sweetalert2';
 // import { Modal, Button, Table, Spinner } from "react-bootstrap";
-import { Button} from "react-bootstrap";
+import { Button } from "react-bootstrap";
 // import * as XLSX from "xlsx";
 // import * as FileSaver from "file-saver";
 import { PickList } from "primereact/picklist";
 import styled from 'styled-components';
-// import { DataTable } from "primereact/datatable";
-// import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 // import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const TableWrapper = styled.div`
@@ -22,8 +22,8 @@ const TableWrapper = styled.div`
 `;
 const MainContainer = styled.div`
   display: flex;
-  // margin-left: 30px;
- 
+  align-items: center;
+  justify-content: center; 
 `;
 
 // const SectionContainer = styled.div`
@@ -51,7 +51,7 @@ const DataContainer = styled.div`
 // const Option = styled.option`
 //   padding: 10px;
 //   font-size: 16px;
- 
+
 //   border-radius: 8px;
 // `;
 
@@ -108,7 +108,7 @@ const StateFormat = () => {
   const [selectedFilename, setSelectedFilename] = useState("");
   const [data, setData] = useState([]);
   // const [showModal, setShowModal] = useState(false);
-  // const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [incorrect, setincorrect] = useState('');
   // const [responseData, setResponseData] = useState([]);
   // const [keys, setKeys] = useState([]);
@@ -167,9 +167,16 @@ const StateFormat = () => {
       console.log("***")
       console.log(response.data[0])
       setData(response.data.data);
-
-
-      setincorrect(parseFloat(((response.data.errorcount) / (response.data.validCount + (response.data.errorcount))) * 100).toFixed(3));
+      const errorRate = parseFloat(((response.data.errorcount) / (response.data.validCount + (response.data.errorcount))) * 100).toFixed(3);
+      const rows = {
+        filename: selectedFilename,
+        total: response.data.validCount + response.data.errorcount,
+        valid: response.data.validCount,
+        invalid: response.data.errorcount,
+        errorRate: errorRate,
+      }
+      setTableData([rows]);
+      setincorrect(errorRate);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -186,21 +193,21 @@ const StateFormat = () => {
       <h2>Lat-Long Format</h2>
       <center>
         <input
-         style={{
+          style={{
 
-          height: "50px",
+            height: "50px",
 
-          width: "300px",
+            width: "300px",
 
-          border: "1px solid #ccc",
+            border: "1px solid #ccc",
 
-          borderRadius: "5px",
+            borderRadius: "5px",
 
-          padding: "8px",
+            padding: "8px",
 
-          fontSize: "16px",
+            fontSize: "16px",
 
-      }}
+          }}
           onChange={handleFileChange}
           type="file"
           name="excelFile"
@@ -210,31 +217,65 @@ const StateFormat = () => {
         <Button onClick={fetchFieldNames}>Read Dataset</Button>
 
         <div
-            style={{
-              marginTop: "1%",
-              width: "70%",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "flex-start",
-            }}
-          >
-            <div style={{ flex: "1", marginRight: "10px" }}>
-              <PickList
-                source={source}
-                target={target}
-                itemTemplate={(item) => item.label}
-                sourceHeader="Available Attribute Headings"
-                targetHeader="Data Product Specification"
-                showSourceControls={false}
-                showTargetControls={false}
-                sourceStyle={{ height: "300px" }}
-                targetStyle={{ height: "300px" }}
-                onChange={onChange}
-              />
-            </div>
+          style={{
+            marginTop: "1%",
+            width: "70%",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "flex-start",
+          }}
+        >
+          <div style={{ flex: "1", marginRight: "10px" }}>
+            <PickList
+              source={source}
+              target={target}
+              itemTemplate={(item) => item.label}
+              sourceHeader="Available Attribute Headings"
+              targetHeader="Data Product Specification"
+              showSourceControls={false}
+              showTargetControls={false}
+              sourceStyle={{ height: "300px" }}
+              targetStyle={{ height: "300px" }}
+              onChange={onChange}
+            />
           </div>
+        </div>
 
         <Button onClick={attributeSelected} style={{ marginBottom: "50px" }}>start Test</Button>
+        <DataTable
+                value={tableData}
+                style={{ width: "90%", margin: "15px" }}>
+                <Column
+                  field="filename"
+                  header="Name of File"
+                  style={{ width: "25%", border: "1px solid black" }}
+                ></Column>
+                <Column
+                  field="total"
+                  header="Total Count"
+                  style={{ width: "15%", border: "1px solid black" }}
+                ></Column>
+                <Column
+                  field="valid"
+                  header="Valid Count"
+                  style={{ width: "15%", border: "1px solid black" }}
+                ></Column>
+                <Column
+                  field="invalid"
+                  header="Invalid Count"
+                  style={{ width: "15%", border: "1px solid black" }}
+                ></Column>
+                <Column
+                  field="errorRate"
+                  header="Error Rate"
+                  style={{ width: "25%", border: "1px solid black" }}
+                  body={(rowData) => (
+                    <div>
+                      {rowData.errorRate}%
+                    </div>
+                  )}
+                ></Column>
+              </DataTable>
       </center>
       <MainContainer>
         <div style={{ display: "flex" }}>
@@ -248,13 +289,14 @@ const StateFormat = () => {
 
               </div>
 
-              <Lab>
+              
+              {/* <Lab>
 
 
 
                 <strong>Error Percentage: </strong>{incorrect}%<br></br>
 
-              </Lab>
+              </Lab> */}
               <TableWrapper>
                 <Table1>
                   <thead>
@@ -271,12 +313,12 @@ const StateFormat = () => {
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>{item?.latitude}</TableCell>
                         <TableCell>{item?.longitude}</TableCell>
-                        <TableCell>{item?.isValid === true ? 
-                        
-                        "Valid" :
-                        
-                        
-                        "Not Valid"}</TableCell>
+                        <TableCell>{item?.isValid === true ?
+
+                          "Valid" :
+
+
+                          "Not Valid"}</TableCell>
                       </TableBodyRow>
                     ))}
                   </tbody>
@@ -284,11 +326,11 @@ const StateFormat = () => {
               </TableWrapper>
             </DataContainer>
             : <></>}
-            </div>
-            </MainContainer>
         </div>
-       
-        )
+      </MainContainer>
+    </div>
+
+  )
 }
 
-        export default StateFormat
+export default StateFormat

@@ -1,14 +1,19 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
 import { PickList } from "primereact/picklist";
 import { FixedSizeList as List } from "react-window"; // Virtualized list
 import styled from "styled-components";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+
 
 
 
 const MainContainer = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const DataContainer = styled.div`
@@ -32,23 +37,16 @@ const TableCell = styled.td`
   text-align: center;
 `;
 
-const Lab = styled.div`
-  background-color: red;
-  color: black;
-  padding: 10px;
-  font-size: 15px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-`;
+
 
 const StateFormat = () => {
   const [source, setSource] = useState([]);
   const [target, setTarget] = useState([]);
   const [selectedFilename, setSelectedFilename] = useState("");
   const [data, setData] = useState([]);
-  const [incorrect, setIncorrect] = useState("");
+  // const [incorrect, setIncorrect] = useState("");
   const [showTable, setShowTable] = useState(false); // Controls table visibility
+  const [tableData, setTableData] = useState([]);
 
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
@@ -89,8 +87,18 @@ const StateFormat = () => {
         attributes: target,
       });
 
+      const errorRate = ((response.data.errorcount / (response.data.validCount + response.data.errorcount)) * 100).toFixed(3);
+      const rows = {
+        filename: selectedFilename,
+        total: response.data.validCount + response.data.errorcount,
+        valid: response.data.validCount,
+        invalid: response.data.errorcount,
+        errorRate: errorRate,
+      }
+      setTableData([rows]);
+
       setData(response.data.data);
-      setIncorrect(((response.data.errorcount / (response.data.validCount + response.data.errorcount)) * 100).toFixed(3));
+      // setIncorrect(errorRate);
 
       setShowTable(true); // Show table after fetching data
     } catch (error) {
@@ -142,16 +150,45 @@ const StateFormat = () => {
         </div>
 
         <Button onClick={fetchStateCodes} style={{ marginBottom: "50px" }}>Start Test</Button>
-      </center>
-
+<DataTable
+        value={tableData}
+        style={{ width: "90%", margin: "15px" }}>
+        <Column
+          field="filename"
+          header="Name of File"
+          style={{ width: "25%", border: "1px solid black" }}
+        ></Column>
+        <Column
+          field="total"
+          header="Total Count"
+          style={{ width: "15%", border: "1px solid black" }}
+        ></Column>
+        <Column
+          field="valid"
+          header="Valid Count"
+          style={{ width: "15%", border: "1px solid black" }}
+        ></Column>
+        <Column
+          field="invalid"
+          header="Invalid Count"
+          style={{ width: "15%", border: "1px solid black" }}
+        ></Column>
+        <Column
+          field="errorRate"
+          header="Error Rate"
+          style={{ width: "25%", border: "1px solid black" }}
+          body={(rowData) => (
+            <div>
+              {rowData.errorRate}%
+            </div>
+          )}
+          ></Column>
+      </DataTable>
+          </center>
       <MainContainer>
         {showTable && data.length > 0 && ( // Table only shows after clicking "Start Test"
           <DataContainer style={{ marginTop: "42px" }}>
-            <h4>Filter Table</h4>
-            <Lab>
-              <strong>Error Percentage: </strong>{incorrect}%
-            </Lab>
-
+            <h4>Validation Results</h4>
             <>
               <List height={450} itemCount={data.length} itemSize={40} width={700}>
                 {({ index, style }) => (

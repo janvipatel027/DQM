@@ -13,7 +13,7 @@ const Home = () => {
 
   return (
     <div style={{height: '100vh'}}>
-      <h1 style={csspart}> <b>Data Quality Management - Software Application </b></h1>
+      <h1 style={csspart}> <b>Data Quality Assessment - Software Application </b></h1>
         <h6 style={{ textAlign: 'center'}}>
           <b>Reference: </b>ISO 19157-1:2023(E) Geographic information - Data Quality – Part-1: General requirements
         </h6>

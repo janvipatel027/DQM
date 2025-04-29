@@ -29,6 +29,7 @@ const Pincodeformate = () => {
   const [showModal, setShowModal] = useState(false);
   const [responseData, setResponseData] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [downloadedFileName, setDownloadedFileName] = useState("");
   const [fetchingFieldNames, setFetchingFieldNames] = useState(false);
   const [sendingFieldNames, setSendingFieldNames] = useState(false);
@@ -265,7 +266,7 @@ const Pincodeformate = () => {
   // };
   const calculateAccuracy = (data) => {
     if (!data || data.length === 0) return 0;
-  
+
     // Count the number of true values in the 'isvalid' property
     const trueCount = data.reduce((acc, curr) => {
       if (curr.isvalid === true) {
@@ -274,15 +275,22 @@ const Pincodeformate = () => {
         return acc;
       }
     }, 0);
-  
+
     // Calculate the accuracy percentage
-    const accuracy = (trueCount / data.length) * 100;
-    return accuracy.toFixed(2);
+    const accuracy = parseFloat((trueCount / data.length) * 100).toFixed(2);
+    return {accuracy, trueCount};
   };
-  
+
   // Calculate accuracy
-  const accuracy = calculateAccuracy(pincodeValidationData);
-  
+  const temp = calculateAccuracy(pincodeValidationData);  
+  const rows = {
+    filename: selectedFilename,
+    total: temp.trueCount + (pincodeValidationData.length - temp.trueCount),
+    valid: temp.trueCount,
+    invalid: pincodeValidationData.length - temp.trueCount,
+    accuracy: temp.accuracy,
+    errorRate: 100 - temp.accuracy,
+  }
 
   return (
     <>
@@ -350,15 +358,60 @@ const Pincodeformate = () => {
               "Check Validity"
             )}
           </button>
-          <h4>Pincode Accuracy Rate: {accuracy}%</h4>
-          
+          {/* <h4>Pincode Accuracy Rate: {accuracy}%</h4> */}
+          <DataTable
+            value={rows ? [rows] : []} // Use rows for the table value
+            style={{ width: "90%", margin: "15px" }}>
+            <Column
+              field="filename"
+              header="Name of File"
+              style={{ width: "25%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="total"
+              header="Total Count"
+              style={{ width: "15%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="valid"
+              header="Valid Count"
+              style={{ width: "15%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="invalid"
+              header="Invalid Count"
+              style={{ width: "15%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="accuracy"
+              header="Accuracy Rate"
+              style={{ width: "15%", border: "1px solid black" }}
+              body={(rowData) => (
+                <div>
+                  {rowData.accuracy}%
+                </div>
+              )}
+            ></Column>
+            <Column
+              field="errorRate"
+              header="Error Rate"
+              style={{ width: "15%", border: "1px solid black" }}
+              body={(rowData) => (
+                <div>
+                  {rowData.errorRate.toFixed(2)}%
+                </div>
+              )}
+            ></Column>
+          </DataTable>
           <div style={{ margin: "0 20px", overflowX: "auto" }}>
             <DataTable
+              style={{ width: "80%", margin: "15px"}}
               value={pincodeValidationData} // Use pincodeValidationData for the table value
               paginator
               rows={5}
               rowsPerPageOptions={[5, 10, 25, 50]}
-              tableStyle={{ minWidth: "5rem" }}
+              tableStyle={{ minWidth: "5rem" }
+              }
             >
               <Column
                 field="pincode"
@@ -372,7 +425,7 @@ const Pincodeformate = () => {
               ></Column>
             </DataTable>
           </div>
-          
+
           <button
             className="btn btn-primary mb-2"
             onClick={handleSave}

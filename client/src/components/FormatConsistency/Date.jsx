@@ -6,14 +6,57 @@ import { Column } from "primereact/column";
 // import { Modal, Button } from 'react-bootstrap';
 import { Modal, Button, Table } from "react-bootstrap";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { FixedSizeList as List } from "react-window";
+import styled from "styled-components";
+
+const MainContainer = styled.div`
+  padding: 40px;
+`;
+
+const DataContainer = styled.div`
+  margin-top: 42px;
+`;
+
+const TableRow = ({ index, style, data }) => {
+  const row = data[index];
+  return (
+    <div
+      style={{
+        ...style,
+        display: "flex",
+        borderBottom: "1px solid #ccc",
+        padding: "0 10px",
+        alignItems: "center",
+        backgroundColor: index % 2 === 0 ? "#f9f9f9" : "white",
+      }}
+    >
+      {Object.keys(row).map((key) => (
+        <div
+          key={key}
+          style={{
+            flex: 1,
+            padding: "10px",
+            borderRight: "1px solid #ddd",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+          title={row[key]}
+        >
+          {row[key]}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const YourComponent = () => {
   const [jsonData, setJsonData] = useState([]);
   const [jData, setJData] = useState([]);
   const [responseData, setResponseData] = useState([]);
-  const [accuracy, setAccuracy] = useState(0);
+  // const [accuracy, setAccuracy] = useState(0);
   const [showModal, setShowModal] = useState(false);
-
+  const [tableData, setTableData] = useState([]);
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
     const formData = new FormData();
@@ -29,8 +72,20 @@ const YourComponent = () => {
           },
         }
       );
+      // console.log(response.data);
+      // console.log(selectedFile.name);
+ 
       setJsonData(response.data.data);
-      setAccuracy(response.data.accuracy);
+      // setAccuracy(response.data.accuracy);
+      const rows = {
+        filename: selectedFile.name,
+        total: response.data.count + response.data.t,
+        valid: response.data.count,
+        invalid: response.data.t,
+        accuracy: response.data.accuracy,
+        errorRate: 100 - response.data.accuracy,
+      }
+      setTableData([rows]);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -60,13 +115,13 @@ const YourComponent = () => {
   };
 
   const handleeyedata = async (c) => {
-    const data={
-      file_name:c
-    }
+    const data = {
+      file_name: c,
+    };
     // console.log(c);
     try {
       const response = await axios.post(
-        "http://localhost:3001/api/generaldetails/getfiledata", 
+        "http://localhost:3001/api/generaldetails/getfiledata",
         data
       );
       setResponseData(response.data);
@@ -75,22 +130,8 @@ const YourComponent = () => {
     } catch (error) {
       console.error("Error:", error);
     }
-  }
-useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:3001/api/generaldetails/getdata"
-        );
-        setJData(response.data);
-        // Process the response here
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
+  };
 
-    fetchData();
-  }, []);
   const viewData = (c) => {
     handleeyedata(c);
     setShowModal(true);
@@ -98,64 +139,100 @@ useEffect(() => {
 
   return (
     <>
-      <div style={{ padding: "40px" }}>
+      <MainContainer>
         <center>
-        <input
-          className="form-control uploadBtnInput"
-          id="formFile"
-          style={{ height: "2.5%", width: "355px" }}
-          onChange={handleFileChange}
-          type="file"
-          name="excelFile"
-        />
+          <input
+            className="form-control uploadBtnInput"
+            id="formFile"
+            style={{ height: "2.5%", width: "355px" }}
+            onChange={handleFileChange}
+            type="file"
+            name="excelFile"
+          />
+
+          <DataTable
+            value={tableData}
+            style={{ width: "90%", margin: "15px" }}>
+            <Column
+              field="filename"
+              header="Name of File"
+              style={{ width: "25%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="total"
+              header="Total Count"
+              style={{ width: "15%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="valid"
+              header="Valid Count"
+              style={{ width: "15%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="invalid"
+              header="Invalid Count"
+              style={{ width: "15%", border: "1px solid black" }}
+            ></Column>
+            <Column
+              field="accuracy"
+              header="Accuracy Rate"
+              style={{ width: "15%", border: "1px solid black" }}
+              body={(rowData) => (
+                <div>
+                  {rowData.accuracy}%
+                </div>
+              )}
+            ></Column>
+            <Column
+              field="errorRate"
+              header="Error Rate"
+              style={{ width: "25%", border: "1px solid black" }}
+              body={(rowData) => (
+                <div>
+                  {rowData.errorRate}%
+                </div>
+              )}
+            ></Column>
+          </DataTable>
         </center>
-        
+
         <div className="mt-4">
           <h2 className="text-lg font-bold mb-2">JSON Data</h2>
-          <p>Accuracy: {accuracy.toFixed(2)}%</p>
-          {jsonData.length !== 0 && (
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              style={{ backgroundColor: "blue" }}
-              onClick={downloadExcel}
-            >
-              Download Excel
-            </button>
-          )}
-          <div className="overflow-x-auto">
-            <table className="table-auto w-full border-collapse border border-gray-400">
-              <thead>
-                <tr>
-                  {jsonData?.length > 0 &&
-                    Object.keys(jsonData[0])?.map((key) => (
-                      <th
-                        key={key}
-                        className="px-4 py-2 bg-gray-200 border border-gray-400"
-                      >
-                        {key}
-                      </th>
-                    ))}
-                </tr>
-              </thead>
-              <tbody>
-                {jsonData?.map((row, index) => (
-                  <tr key={index}>
-                    {Object.values(row).map((value, i) => (
-                      <td key={i} className="px-4 py-2 border border-gray-400">
-                        {value}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {/* <p>Accuracy: {accuracy.toFixed(2)}%</p> */}
+          <center>
+
+            {jsonData.length !== 0 && (
+              <>
+                <DataContainer style={{ marginTop: "20px", alignItems: "center" }}>
+                  <h4>Filter Table</h4>
+                  <List
+                    style={{ border: "1px solid #ccc", borderRadius: "5px" }}
+                    height={450}
+                    itemCount={jsonData.length}
+                    itemSize={50}
+                    width={800}
+                    itemData={jsonData}
+                  >
+                    {TableRow}
+                  </List>
+                </DataContainer>
+              </>
+            )}
+            {jsonData.length !== 0 && (
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                style={{ backgroundColor: "blue", marginTop: "20px", marginBottom: "20px" }}
+                onClick={downloadExcel}
+              >
+                Download Excel
+              </button>
+            )}
+          </center>
         </div>
-      </div>
+      </MainContainer>
+
       {/* {jData} */}
-      <div
-        style={{ display: "flex", justifyContent: "center", height: "100%" }}
-      >
+      <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
         <div className="card" style={{ width: "85%" }}>
           <DataTable
             value={jData}
@@ -164,21 +241,9 @@ useEffect(() => {
             rowsPerPageOptions={[5, 10, 25, 50]}
             tableStyle={{ minWidth: "5rem" }}
           >
-            <Column
-              field="file_name"
-              header="file_name"
-              style={{ width: "25%" }}
-            ></Column>
-            <Column
-              field="created_date"
-              header="created_date"
-              style={{ width: "25%" }}
-            ></Column>
-            <Column
-              field="accuracy"
-              header="Accuracy"
-              style={{ width: "25%" }}
-            ></Column>
+            <Column field="file_name" header="file_name" style={{ width: "25%" }}></Column>
+            <Column field="created_date" header="created_date" style={{ width: "25%" }}></Column>
+            <Column field="accuracy" header="Accuracy" style={{ width: "25%" }}></Column>
             <Column
               field="action"
               header="View/Download"
@@ -192,12 +257,8 @@ useEffect(() => {
               )}
             />
           </DataTable>
-        
-          <Modal
-            show={showModal}
-            onHide={() => setShowModal(false)}
-            fullscreen={true}
-          >
+
+          <Modal show={showModal} onHide={() => setShowModal(false)} fullscreen={true}>
             <Modal.Header closeButton>
               <Modal.Title>View Data</Modal.Title>
             </Modal.Header>
@@ -206,11 +267,8 @@ useEffect(() => {
               <Table striped bordered hover>
                 <thead>
                   <tr>
-                   
                     {responseData.length > 0 &&
-                      Object.keys(responseData[0]).map((key) => (
-                        <th key={key}>{key}</th>
-                      ))}
+                      Object.keys(responseData[0]).map((key) => <th key={key}>{key}</th>)}
                   </tr>
                 </thead>
                 <tbody>

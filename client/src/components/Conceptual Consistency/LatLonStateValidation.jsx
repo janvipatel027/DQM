@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import DataTable from "react-data-table-component";
+import { DataTable as PrimeTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 import { Button, Modal } from "react-bootstrap";
 import { PickList } from "primereact/picklist";
 import { saveAs } from "file-saver"; // Import file-saver library
@@ -14,6 +16,7 @@ const LatLonStateValidation = () => {
     const [errorRate, setErrorRate] = useState(null);
     const [accuracy, setAccuracy] = useState(null);
     const [showTable, setShowTable] = useState(false);
+    const [tableData, setTableData] = useState([]);
     const [selectedState, setSelectedState] = useState("All");
     const [selectedValidity, setSelectedValidity] = useState("All");
     const [logs, setLogs] = useState([]);
@@ -72,11 +75,20 @@ const LatLonStateValidation = () => {
                 { filename: selectedFilename }, // ✅ Send JSON filename instead of file
             );
 
-            // console.log("Server Response:", response);
+            console.log("Server Response:", response);
+            const row = {
+                filename: selectedFilename,
+                total: response.data.validationResults.length,
+                validCount: response.data.validationResults.length - response.data.invalid,
+                invalidCount: response.data.invalid,
+                accuracyRate: response.data.accuracy + "%",
+                errorRate: response.data.errorRate + "%",
+            }
             setResults(response.data.validationResults);
             setErrorRate(response.data.errorRate);
             setAccuracy(response.data.accuracy);
             setShowTable(true);
+            setTableData([row]);
         } catch (error) {
             console.error("Error uploading file:", error);
         }
@@ -273,8 +285,7 @@ const LatLonStateValidation = () => {
         saveAs(blob, "validation_results.xlsx");
     };
 
-    
-    
+
 
     return (
         <div>
@@ -313,80 +324,139 @@ const LatLonStateValidation = () => {
                     </div>
                 </div>
 
-                <Button onClick={handleUpload} style={{ marginBottom: "50px" }}>Start Test</Button>
+                <Button onClick={handleUpload} style={{ margin: "20px" }}>Start Test</Button>
                 {showTable && (
                     <div>
-                        {accuracy !== null && (
+                        {/* {accuracy !== null && (
                             <p className="mt-2 font-bold"><strong>Accuracy: {accuracy}%</strong></p>
                         )}
 
                         {errorRate !== null && (
                             <p className="mt-2 font-bold"><strong>Error Rate: {errorRate}%</strong></p>
-                        )}
+                        )} */}
 
-                        <div className="mt-4">
+                        <PrimeTable
+                            value={tableData}
+                            style={{ width: "90%", margin: "10px" }}>
+                            <Column
+                                field="filename"
+                                header="Name of File"
+                                style={{ width: "25%", border: "1px solid black" }}
+                            ></Column>
+                            <Column
+                                field="total"
+                                header="Total Count"
+                                style={{ width: "15%", border: "1px solid black" }}
+                            ></Column>
+                            <Column
+                                field="validCount"
+                                header="Valid Count"
+                                style={{ width: "15%", border: "1px solid black" }}
+                            ></Column>
+                            <Column
+                                field="invalidCount"
+                                header="Invalid Count"
+                                style={{ width: "15%", border: "1px solid black" }}
+                            ></Column>
+                            <Column
+                                field="accuracyRate"
+                                header="Accuracy Rate"
+                                style={{ width: "15%", border: "1px solid black" }}
+                            ></Column>
+                            <Column
+                                field="errorRate"
+                                header="Error Rate"
+                                style={{ width: "25%", border: "1px solid black" }}
+                            ></Column>
+                        </PrimeTable>
+
+                        <div className="mt-4" style={{ width: "97%" }}>
                             <h3 className="text-lg font-semibold">Validation Results</h3>
 
-                            <DataTable
-                                columns={columns}
-                                data={filteredResults}
-                                pagination
-                                striped
-                                highlightOnHover
-                                responsive
-                                conditionalRowStyles={conditionalRowStyles} // Apply the updated styles here
-                            />
-                            {/* Add Download CSV button */}
-                                <div>
-                                <button onClick={downloadXLSX} className="bg-green-500 text-black px-4 py-2 rounded">
-                                    Download XLSX
-                                </button>
-                                </div>
+                            <div className="flex flex-col">
+                                <DataTable
+                                    columns={columns}
+                                    data={filteredResults}
+                                    pagination
+                                    striped
+                                    highlightOnHover
+                                    responsive
+                                    conditionalRowStyles={conditionalRowStyles} // Apply the updated styles here
+                                />
+                                {/* Add Download CSV button */}
+                                <Button onClick={downloadXLSX} className="px-4 py-2 rounded height-10 width-10 " style={{ alignSelf: "flex-end" }}>
+                                    Download
+                                </Button>
+                            </div>
 
                             {/* Add this button below the validation results */}
-                            <Button onClick={handleSaveResults} className="bg-blue-500 text-white px-4 py-2 mt-4 rounded">
+                            <Button onClick={handleSaveResults} className="bg-blue-500 text-white px-4 py-2 m-4 rounded">
                                 Save Results
                             </Button>
 
 
                             {/* Logs Table */}
-                            <h3>Past Logs</h3>
-                            <table border="1">
-                                <thead>
-                                    <tr>
-                                        <th>Filename</th>
-                                        <th>Selected Attributes</th>
-                                        <th>Error Rate</th>
-                                        <th>Accuracy Rate</th>
-                                        <th>Timestamp</th>
-                                        <th>View</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {logs.length > 0 ? (
-                                        logs.map((log) => (
-                                            <tr key={log.id}>
-                                                <td>{log.filename}</td>
-                                                <td>{Array.isArray(log.selected_attributes) ? log.selected_attributes.join(", ") : log.selected_attributes}</td>
-                                                <td>{log.error_rate}%</td>
-                                                <td>{log.accuracy_rate}%</td>
-                                                <td>{new Date(log.timestamp).toLocaleString()}</td>
-                                                <td>
-                                                    <Button onClick={() => viewResult(log.filename)}>👁️ View</Button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="6">No logs found</td>
-                                        </tr>
-                                    )}
-                                </tbody>
 
-                            </table>
                         </div>
                     </div>
                 )}
+                <h3>Past Logs</h3>
+                <div className="card"  style={{ width: "85%", marginBottom: "20px" }}>
+                <PrimeTable value={logs} paginator rows={5}
+                    rowsPerPageOptions={[5, 10, 25, 50]}  tableStyle={{ minWidth: "5rem" }}>
+                    <Column
+                        field="filename"
+                        header="Name of File"
+                        style={{ width: "25%"}}
+                    ></Column>
+                    <Column
+                        field="selected_attributes"
+                        header="Selected Attributes"
+                        style={{ width: "25%" }}
+                        body={(rowData) => (
+                            <div>
+                                {Array.isArray(rowData.selected_attributes)
+                                    ? rowData.selected_attributes.join(", ")
+                                    : rowData.selected_attributes}
+                            </div>
+                        )}
+                    ></Column>
+                    <Column
+                        field="error_rate"
+                        header="Error Rate"
+                        style={{ width: "10%"}}
+                        body={(rowData) => (
+                            <div>
+                                {rowData.error_rate}%
+                            </div>
+                        )}
+                    ></Column>
+                    <Column
+                        field="accuracy_rate"
+                        header="Accuracy Rate"
+                        style={{ width: "10%"}}
+                        body={(rowData) => (
+                            <div>
+                                {rowData.accuracy_rate}%
+                            </div>
+                        )}
+                    ></Column>
+                    <Column
+                        field="timestamp"
+                        header="Timestamp"
+                        style={{ width: "15%"}}
+                    ></Column>
+                    <Column
+                        field="view"
+                        header="View"
+                        style={{ width: "15%"}}
+                        body={(rowData) => (
+                            <Button onClick={() => viewResult(rowData.filename)}>👁️ View</Button>
+                        )}
+                    ></Column>
+                </PrimeTable>
+                </div>
+                
                 <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>Past Validation Results - {downloadedFileName}</Modal.Title>

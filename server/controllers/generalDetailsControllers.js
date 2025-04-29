@@ -207,7 +207,7 @@ console.log(jsonData)
     // }
     const count = jsonObjects.filter((obj) => obj.error === "0").length;
     const t = jsonObjects.filter((obj) => obj.error === "1").length;
-    const accuracy = (count / (count + t)) * 100;
+    const accuracy = ((count / (count + t)) * 100).toFixed(3);
   //   client = await pool.connect();
   //   try{
   //   await client.query("BEGIN");
@@ -280,7 +280,7 @@ console.log(jsonData)
 
   await client.query('COMMIT');
 
-  res.json({ data: jsonObjects, accuracy });
+  res.json({ data: jsonObjects, accuracy, count, t });
 } catch (error) {
   if (client) {
     await client.query('ROLLBACK');
